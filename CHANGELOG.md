@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — 0.0.1 development
+
+- Add manuscript, character, event, worldbuilding and setting sections in the vertical library rail.
+- Add typed reference cards, subdocuments, canon status, tags and document links.
+- Store event participants, prerequisites and story-time anchors separately from display codes.
+- Read Formats 1 and 2; keep chapter/note-only projects compatible with Format 1.
+- Keep reference editing in the existing workspace and preserve text through explicit UTF-8 edits.
+- Avoid unchanged metadata writes and isolate property input in a native sheet.
+- Replace repeated area controls with a fixed library and paired editors; direction buttons reposition the auxiliary editor.
+- Select each editor's document independently and migrate legacy layout preferences without changing project files.
+
+
 ## 0.0.1 — 2026-11-17
 
 - Native macOS document app with chapters, notes, synopses, search and ordering.

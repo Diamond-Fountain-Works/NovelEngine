@@ -11,30 +11,17 @@ struct WorkspacePaneView: View {
     let palette: NovelPalette
     @State private var showsTypography = false
 
-    private var title: String {
-        pane.content == .editor ? (project.document(pane.documentID)?.title.nilIfEmpty ?? "未命名") : pane.content.title
-    }
     var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 0) {
-                WorkspaceAreaHeader(pane: pane, title: title, session: session, palette: palette, typography: { showsTypography = true })
-                    .popover(isPresented: $showsTypography, arrowEdge: .top) {
-                        EditorTypographyControls().frame(width: 260).padding(20)
-                    }
-                switch pane.content {
-                case .editor:
-                    EditorPaneView(pane: pane, project: $project, session: session, bindings: bindings, palette: palette)
-                case .manuscript:
-                    ManuscriptSidebar(project: $project, session: session, bindings: bindings, palette: palette, pane: pane)
-                case .inspector:
-                    DocumentInspector(project: $project, session: session, bindings: bindings, palette: palette, paneID: pane.id)
+        VStack(spacing: 0) {
+            WorkspaceAreaHeader(pane: pane, project: project, session: session, palette: palette,
+                typography: { session.prepareAuxiliaryInput(in: pane.id); showsTypography = true })
+                .popover(isPresented: $showsTypography, arrowEdge: .top) {
+                    EditorTypographyControls().frame(width: 260).padding(20)
                 }
-            }
-            .background(palette.paper).foregroundStyle(palette.text)
-            .onAppear { session.updateSize(geometry.size, for: pane.id) }
-            .onChange(of: geometry.size) { session.updateSize($0, for: pane.id) }
-        }
-        .accessibilityElement(children: .contain).accessibilityLabel("\(pane.content.title)区域")
+            EditorPaneView(pane: pane, project: $project, session: session, bindings: bindings, palette: palette)
+        }.background(palette.paper).foregroundStyle(palette.text)
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(session.layout.primary.id == pane.id ? "主编辑区" : "辅助编辑区")
     }
 }
 
@@ -48,5 +35,4 @@ private struct EditorTypographyControls: View {
         }
     }
 }
-private extension String { var nilIfEmpty: String? { isEmpty ? nil : self } }
 #endif

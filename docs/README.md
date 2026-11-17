@@ -3,9 +3,11 @@
 | 需要了解什么 | 权威文档 |
 | --- | --- |
 | 当前功能与版本边界 | [产品需求](product/REQUIREMENTS.md) |
+| 人物、事件与资料如何编辑 | [资料模块](product/REFERENCE_LIBRARY.md) |
 | 模块、依赖与状态所有权 | [架构](architecture/ARCHITECTURE.md) |
 | 为什么采用文件型原生 App | [ADR 0001](architecture/decisions/0001-native-document-foundation.md) |
-| 为什么侧栏与正文统一成区域 | [ADR 0002](architecture/decisions/0002-unified-workspace-areas.md) |
+| 当前固定导航与双区布局 | [ADR 0003](architecture/decisions/0003-fixed-library-paired-editors.md) |
+| 历史统一区域决策 | [ADR 0002](architecture/decisions/0002-unified-workspace-areas.md) |
 | 作品包的文件布局与版本 | [作品格式](../protocol/PROJECT_FORMAT.md) |
 | 双主题、排版、分栏与资源 | [设计系统](design/DESIGN_SYSTEM.md) |
 | 构建、运行与文件位置 | [开发说明](development/DEVELOPMENT.md) |

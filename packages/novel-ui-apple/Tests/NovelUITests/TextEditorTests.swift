@@ -5,6 +5,20 @@ import SwiftUI
 @testable import NovelUI
 
 final class TextEditorTests: XCTestCase {
+    @MainActor func testCanonicallyEquivalentUnicodeEditAndUndoPreserveActualInputBytes() throws {
+        let original = "e\u{301}"
+        let box = TextBox(original)
+        let (host, editor) = try editor(box)
+        withExtendedLifetime(host) {
+            editor.setSelectedRange(NSRange(location: 0, length: (editor.string as NSString).length))
+            editor.insertText("é", replacementRange: editor.selectedRange())
+            XCTAssertEqual(Array(box.text.utf8), Array("é".utf8))
+            editor.breakUndoCoalescing(); editor.undoManager?.undo()
+            XCTAssertEqual(Array(box.text.utf8), Array(original.utf8))
+            editor.undoManager?.redo()
+            XCTAssertEqual(Array(box.text.utf8), Array("é".utf8))
+        }
+    }
     @MainActor func testProgrammaticFocusRequestAndCancellation() async throws {
         let leftText = TextBox("左侧"), rightText = TextBox("右侧")
         let (leftHost, left) = try editor(leftText)
