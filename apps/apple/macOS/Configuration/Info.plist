@@ -7,7 +7,7 @@
     <key>CFBundleDisplayName</key><string>Novel Engine</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleShortVersionString</key><string>0.0.1</string>
-    <key>CFBundleVersion</key><string>15</string>
+    <key>CFBundleVersion</key><string>18</string>
     <key>CFBundleDevelopmentRegion</key><string>zh-Hans</string>
     <key>CFBundleLocalizations</key><array><string>zh-Hans</string></array>
     <key>LSMinimumSystemVersion</key><string>13.0</string>
@@ -26,6 +26,6 @@
         <key>UTTypeIdentifier</key><string>com.diamondfountain.novelengine.project</string>
         <key>UTTypeDescription</key><string>Novel Engine 作品</string>
         <key>UTTypeConformsTo</key><array><string>com.apple.package</string></array>
-        <key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>novelengine</string></array></dict>
+        <key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>ne</string><string>novelengine</string></array></dict>
     </dict></array>
 </dict></plist>

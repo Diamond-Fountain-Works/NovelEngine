@@ -1,15 +1,15 @@
 # Novel Engine 架构
 
-日期：2026-11-17。当前实现：macOS 原生文档 App；HTML 保留作历史设计参考。
+日期：2026-11-17。当前实现：macOS 原生托管作品库 App；HTML 保留作历史设计参考。
 
 ## 源码边界
 
 ```text
-apps/apple/macOS/                    App 入口、系统文档适配、Bundle 配置
+apps/apple/macOS/                    App 入口、作品库、自动保存、文件面板和 Bundle 配置
 packages/novel-core-swift/
   Sources/NovelDomain/               作品、章节、笔记、字数等值模型
   Sources/NovelApplication/          显式编辑、创建和排序用例
-  Sources/NovelStorage/              版本化文件包编解码
+  Sources/NovelStorage/              版本化作品编解码、快照、原图和事务存储
   Sources/NovelWorkspace/            与正文独立的布局树和布局历史
   Tests/NovelCoreTests/              领域、格式与分栏模型测试
 packages/novel-ui-apple/
@@ -32,10 +32,11 @@ scripts/                            工程检查工具
 ```mermaid
 flowchart TD
   App[Novel Engine App] --> UI[NovelUI]
-  App --> File[NovelFileDocument]
+  App --> Library[LibraryController / ManagedProjectSession]
   UI --> UseCase[NovelApplication]
   UseCase --> Domain[NovelDomain]
-  File --> Codec[NovelStorage]
+  Library --> Store[ManagedProjectRepository]
+  Store --> Codec[NovelStorage]
   Codec --> Domain
   UI --> Layout[NovelWorkspace]
 ```
@@ -45,7 +46,10 @@ flowchart TD
 - `ProjectLibrary`：生成保留祖先的目录搜索结果与反向引用，不重排事件代码。
 - `ProjectEditingService`：显式编辑用例，注入时钟，不改写作者输入。
 - `ProjectPackageCodec`：格式边界，不依赖 SwiftUI、AppKit 或数据库。
-- `NovelFileDocument`：将目录型 FileWrapper 转为通用文件条目，交给 codec；NSDocument / DocumentGroup 处理系统保存流程。
+- `ManagedProjectRepository`：actor 串行文件操作，跨进程锁、完整快照、原子 head 发布、修订比较、原图和导入 / 导出。
+- `LibraryController`：共享作品目录与会话，同一作品在一个进程中只持有一份可编辑模型。
+- `ManagedProjectSession`：编辑状态、350ms 合并保存、串行最新值写入与失败草稿保留；正常退出等待保存。
+- `NovelFileDocument`：保留历史 FileWrapper 格式验收，当前运行入口已切换为 WindowGroup 和作品库。
 - `WorkspaceSession`：每个作品窗口一个 MainActor 对象，管理选中分栏、搜索、布局撤销和本机偏好。
 - `EditorWorkspaceLayout`：主编辑区与一个可移动辅助区。资料导航固定在布局外；文档信息使用原生 Sheet。旧 `WorkspaceLayout` 只供历史布局读取与兼容测试。
 - `AreaFocusRequest`：记录程序操作完成后需要获取键盘焦点的区域；手动点击切换与程序请求分开处理，避免抢占标题输入。
@@ -58,9 +62,13 @@ OOP 用于明确所有权和封装；不把所有模型改成 class，也不添�
 
 ## 正文、保存与布局
 
-`DocumentGroup` 持有 `NovelFileDocument`，NativeWorkspace 通过 Binding 编辑同一个 project。共享文档的多个分栏引用同一 document ID。每次输入由应用服务生成新的值状态；标记中的输入法文本暂不回写，不用 SwiftUI 更新覆盖组合输入。
+`WindowGroup` 打开 LibraryRootView。作品库进入作品主页或原生编辑器；两者 Binding 到同一个 ManagedProjectSession.project，不维护第二套正文。模型变化经串行自动保存持久化，保存失败保留编辑并显示具体错误，导出可包含未保存的草稿。
 
-文件包含 `project.json` 和独立 UTF-8 正文。读取格式 1、2；只有章节 / 笔记时写 1，包含资料文档时写 2，见 [格式合同](../../protocol/PROJECT_FORMAT.md)。原生保存及关闭行为交给系统文档机制。存储解码失败会抛出错误，不能用新作品静默替代。
+默认根目录由系统 documentDirectory 定位，追加 `Novel Engine/作品`；内部目录使用稳定 project UUID，改书名不改变位置。每部作品的 head.json 指向已验证快照，revisions 仅保留当前与上一份。未发布的半成品不能成为当前作品。保存先验证现有 revision 和内容摘要，跨进程使用文件锁；外部改变时拒绝覆盖。
+
+App 读取作品格式 1、2、3；没有作品级资料时仍按原规则写 1 或 2，作品资料 / 封面写 3。简介、作者和正文保持原始 Unicode 字节。封面按 UUID 存放原始文件，ImageIO 缩略图只用于显示。导出 `.ne` 只含 project.json、documents 和必要 assets，导入同时接受旧扩展名且不修改源文件。
+
+QA 构建使用独立 Bundle ID 和显式 NovelEngineQARoot。配置缺失、相对路径或指向正式作品库时拒绝启动；测试不回退到正式文稿目录。
 
 左侧资料导航固定在编辑器布局外。`LibraryBrowserState` 持有当前模块、章节 / 笔记筛选和临时搜索。点击目录项在活动编辑区打开；每个编辑区的文档选择器只操作自己的 pane ID。两个编辑区引用同一个 project，不另存作者正文。
 
@@ -72,9 +80,9 @@ OOP 用于明确所有权和封装；不把所有模型改成 class，也不添�
 
 ## 当前状态与后续边界
 
-- App 0.0.1 Build 15，开发 Bundle ID `com.diamondfountain.novelengine.dev`。Build 4 为统一区域与焦点排查的中间版本。
-- 作品格式读取 1、2。没有数据库 Schema 或同步协议版本；不会用 App 版本冒充它们。
-- 当前选择文件型原生 App，替代此前尚未实施的 SQLite 建议。选择依据见 [ADR 0001](decisions/0001-native-document-foundation.md)。
+- App 0.0.1 Build 18，开发 Bundle ID `com.diamondfountain.novelengine.dev`。Build 4 为统一区域与焦点排查的中间版本。
+- 作品格式读取 1、2、3。没有数据库 Schema 或同步协议版本；不会用 App 版本冒充它们。
+- 当前使用本地文件作品库，未接入数据库。早期文档型入口见 [ADR 0001](decisions/0001-native-document-foundation.md)。
 - SQLite、Outbox、签名日志、服务器、账号和跨端同步均未实施。后续合同必须保留并发正文双方版本，不能整篇 LWW 丢字。
 - Apple UI 的 macOS 适配编译隔离。共享核心的平台声明为 macOS 13 / iOS 16，但当前只实际构建测试 macOS。
 - Windows / Android 应以统一作品格式和测试向量接入，不直接使用 NSTextView 或 FileDocument 作为公共协议。
@@ -93,3 +101,9 @@ OOP 用于明确所有权和封装；不把所有模型改成 class，也不添�
 ReferenceSummaryBar 打开原生属性 Sheet，先撤销待处理的正文焦点请求。ReferenceDetailsEditor 管理字段焦点和标签输入；完成后仅提交实际变化。ProjectBindings 在值没有变化时不写 Document Binding，防止关闭属性窗口也触发已编辑状态。
 
 NovelProject.validate 校验同类型父子、存在的引用、顶级参与人物与无环事件前置。编辑先在候选值完成校验，再一次提交；codec 读写再次验证。文档及资料字段的相等性按 UTF-8 字节比较，显式的 Unicode 编码变化不被吞掉。
+
+## 自动保存和退出
+
+编辑串号与已保存串号分开；写入期间的新编辑排在下一次保存，不并发覆写同一作品。Socket、网络与账号不参与此流程。状态只有待保存、保存中、已保存和真实失败。AppDelegate 正常退出等待所有会话及封面复制完成；失败时取消退出，保留草稿。异常退出只保证已提交快照，尚处于待保存状态的输入不作持久化承诺。
+
+原图目前随作品保留，替换后的原图没有自动清理策略。修订快照不等于完整修订历史或跨设备备份。

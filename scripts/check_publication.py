@@ -18,11 +18,11 @@ patterns = {
     "credential assignment": re.compile(r'''(?im)^\s*(?:CLOUDFLARE_API_TOKEN|CF_API_TOKEN|OPENAI_API_KEY|GITHUB_TOKEN|PAIRING_SECRET)\s*[:=]\s*["']?[A-Za-z0-9_/-]{16,}'''),
     "private home path": re.compile(r"/Users/[A-Za-z0-9_.-]+/"),
 }
-blocked_extensions = {".p12", ".p8", ".pem", ".key", ".db", ".sqlite", ".sqlite3", ".keystore", ".jks", ".dmg"}
+blocked_extensions = {".p12", ".p8", ".pem", ".key", ".db", ".sqlite", ".sqlite3", ".keystore", ".jks", ".dmg", ".ne"}
 errors = []
 for name in sorted(paths):
     path = pathlib.Path(name)
-    if any(part in {"build", ".build", "DerivedData", "xcuserdata"} or part.endswith((".novelengine", ".app", ".xcresult")) for part in path.parts) or path.suffix in blocked_extensions or path.name.startswith((".env", ".dev.vars")):
+    if any(part in {"build", ".build", "DerivedData", "xcuserdata"} or part.endswith((".novelengine", ".ne", ".app", ".xcresult")) for part in path.parts) or path.suffix in blocked_extensions or path.name.startswith((".env", ".dev.vars")):
         errors.append({"file": name, "issue": "private data or generated artifact path"})
         continue
     full = root / path

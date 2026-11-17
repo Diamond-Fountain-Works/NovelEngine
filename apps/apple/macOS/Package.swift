@@ -11,6 +11,6 @@ let package = Package(
             .product(name: "NovelDomain", package: "novel-core-swift"),
             .product(name: "NovelStorage", package: "novel-core-swift")
         ]),
-        .testTarget(name: "NativeDocumentTests", dependencies: ["NovelEngine", .product(name: "NovelDomain", package: "novel-core-swift")])
+        .testTarget(name: "NativeDocumentTests", dependencies: ["NovelEngine", .product(name: "NovelDomain", package: "novel-core-swift"), .product(name: "NovelStorage", package: "novel-core-swift")])
     ]
 )

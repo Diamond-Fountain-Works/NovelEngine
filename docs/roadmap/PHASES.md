@@ -5,7 +5,8 @@
 | 设计 | DFW 双主题、分栏与 Join 的交互原型 | 可操作预览，截图待人工批准 |
 | Native 1 | 核心、文件包、原生编辑与历史区域布局 | v0.0.1 Build 6 已发布源码；保留历史 Tag |
 | Native Library | 五个资料模块、父子 / 关联、固定导航与双区编辑 | Build 15 构建、80 项 XCTest 与原生实操通过；截图待人工复核 |
-| Native 2 | 修订 / 恢复、导入导出与长文输入性能 | 待实施 |
+| Managed Library | 作品库、主页资料、原图封面、自动保存和 ne 导入 / 导出 | Build 18 已实现；验收见原生 QA |
+| Native 2 | 完整修订 / 恢复、更多导出与长文输入性能 | 待实施 |
 | Apple Mobile | iPhone / Duo / iPad 原生 UI 和共享核心 | 待实施 |
 | Sync | 账号 / 设备、持久 Outbox、冲突比较与安全同步 | 待设计与实施 |
 | Other Native | Android 平板和 Windows 客户端 | 待实施 |

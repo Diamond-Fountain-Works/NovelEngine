@@ -49,5 +49,8 @@ final class NativeDocumentTests: XCTestCase {
     }
     func testMalformedPackageIsNotReplacedWithNewProject() {
         XCTAssertThrowsError(try NovelFileDocument(fileWrapper: FileWrapper(directoryWithFileWrappers: [:])))
+        let cover = ProjectCover(fileExtension: "png", originalFilename: "cover.png", byteCount: 1, sha256: String(repeating: "0", count: 64))
+        let project = NovelProject(details: ProjectDetails(cover: cover))
+        XCTAssertThrowsError(try NovelFileDocument(project: project).packageWrapper(), "The legacy adapter must not emit a package with a missing cover asset")
     }
 }

@@ -12,11 +12,11 @@ make check       # 文档链接、依赖边界和配置检查
 make qa          # 构建、测试、静态检查
 ```
 
-可在 Xcode 打开 `apps/apple/macOS/Package.swift`，选择 NovelEngine 产品。Codex Run 调用同一 `script/build_and_run.sh`。脚本支持 `--build`、`--debug`、`--logs`、`--telemetry`、`--verify`；不会强制终止可能含未保存正文的进程。
+可在 Xcode 打开 `apps/apple/macOS/Package.swift`，选择 NovelEngine 产品。Codex Run 调用同一 `script/build_and_run.sh`。脚本支持 `--build`、`--build-qa`、`--debug`、`--logs`、`--telemetry`、`--verify`；不会强制终止可能含未保存正文的进程。
 
 ## 状态与文件位置
 
-- App 状态与作品：DocumentGroup / FileDocument；保存位置由作者选择。
+- App 状态与作品：WindowGroup / 托管作品库；默认存放于系统文稿目录，自动保存。
 - 本机 UI 偏好：开发 Bundle 的 UserDefaults，只含主题、字体、布局与文档 ID。
 - 构建、模块缓存：`build/`，不提交；不会安装到 Applications。
 - 临时测试作品、截图、日志：开发者的 `~/Documents/Codex/` 可见任务目录，不提交仓库。
@@ -31,3 +31,17 @@ make qa          # 构建、测试、静态检查
 ## Git 边界
 
 项目使用根目录自己的 `.git`。写操作前检查 `git rev-parse --show-toplevel` 必须为 NovelEngine 项目。公开上传前执行 `make check`；作品、日志、密钥和构建产物不进入仓库。任务完成后删除一次性测试缓存，保留必要日志及截图证据。
+
+## 作品库与隔离 QA
+
+正式开发 App 默认使用系统文稿目录下的 `Novel Engine`，新建后自动保存；不要通过测试写入该目录。
+
+原生 UI QA：
+
+```sh
+./script/build_and_run.sh --build-qa "$HOME/Documents/Codex/NovelEngine-QA/Library"
+```
+
+产物为 `build/Novel Engine QA.app`，Bundle ID 为 `com.diamondfountain.novelengine.dev.qa`。路径只写入生成的 QA Info.plist，不进入正式配置。QA 缺少隔离路径时停止，不回退到正式库。所有 QA 数据必须是合成数据。测试结束后退出 QA App、记录结果并删除 QA 包和一次性数据，保留最新正式开发 App 与必要证据。
+
+单元测试可用 `NOVELENGINE_TEST_ROOT` 指定可见测试目录；每项测试只创建并移除自己生成的 UUID 子目录。构建缓存位于 build，验收完成后清理重复测试缓存。
