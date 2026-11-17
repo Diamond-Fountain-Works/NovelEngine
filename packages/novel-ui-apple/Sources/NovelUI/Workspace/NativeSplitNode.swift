@@ -4,7 +4,6 @@ import NovelDomain
 import NovelWorkspace
 
 struct NativeSplitNode: View {
-    let node: WorkspaceNode
     @Binding var project: NovelProject
     @ObservedObject var session: WorkspaceSession
     let bindings: ProjectBindings
@@ -13,7 +12,7 @@ struct NativeSplitNode: View {
     var body: some View {
         GeometryReader { geometry in
             let bounds = WorkspaceRect(width: geometry.size.width, height: geometry.size.height)
-            let frames = node.frames(in: bounds)
+            let frames = session.layout.fittedRoot(in: bounds).frames(in: bounds)
             ZStack(alignment: .topLeading) {
                 ForEach(frames.panes, id: \.pane.id) { placement in
                     let visible = !session.focused || placement.pane.id == session.layout.activePaneID
@@ -28,27 +27,15 @@ struct NativeSplitNode: View {
                         AreaDivider(axis: placement.axis, ratio: placement.ratio, extent: placement.extent,
                             identifier: "workspace.divider.\(placement.id.uuidString)", palette: palette,
                             resize: { session.resize(placement.id, ratio: $0) },
-                            actions: { menuActions(branchID: placement.id, fraction: $0) })
+                            actions: { _ in [] })
                             .frame(width: placement.rect.width, height: placement.rect.height)
                             .position(x: placement.rect.x + placement.rect.width / 2, y: placement.rect.y + placement.rect.height / 2)
                     }
                 }
             }.frame(width: geometry.size.width, height: geometry.size.height)
+                .onAppear { session.updateWorkspaceSize(geometry.size) }
+                .onChange(of: geometry.size) { session.updateWorkspaceSize($0) }
         }
-    }
-    private func menuActions(branchID: UUID, fraction: Double) -> [AreaDividerAction] {
-        guard let source = session.layout.boundarySource(branchID, fraction: fraction) else { return [] }
-        var items = SplitDirection.allCases.map { direction in
-            AreaDividerAction(title: direction.title, enabled: session.canSplit(direction, in: source.id), perform: { session.split(direction, in: source.id) })
-        }
-        let joins = session.layout.boundaryJoins(branchID, fraction: fraction)
-        if !joins.isEmpty {
-            items.append(AreaDividerAction(title: "", enabled: false, perform: {}))
-            items += joins.map { join in
-                AreaDividerAction(title: join.title, enabled: true, perform: { session.join(from: join.sourceID, toward: join.direction) })
-            }
-        }
-        return items
     }
 }
 #endif

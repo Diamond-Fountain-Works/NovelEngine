@@ -38,7 +38,7 @@ import SwiftUI
         guard let view = scroll.documentView as? ManuscriptTextView else { return }
         view.onFocus = onFocus
         view.focusRequest = focusToken
-        if view.string != text, !view.hasMarkedText() {
+        if !view.string.utf8.elementsEqual(text.utf8), !view.hasMarkedText() {
             let selection = view.selectedRange()
             view.undoManager?.removeAllActions()
             view.string = text
@@ -78,7 +78,7 @@ import SwiftUI
         }
         private func commit(_ view: NSTextView) {
             // Commit only completed input; marked text remains owned by the input method.
-            if !view.hasMarkedText(), parent.text != view.string { parent.text = view.string }
+            if !view.hasMarkedText(), !parent.text.utf8.elementsEqual(view.string.utf8) { parent.text = view.string }
         }
     }
 }

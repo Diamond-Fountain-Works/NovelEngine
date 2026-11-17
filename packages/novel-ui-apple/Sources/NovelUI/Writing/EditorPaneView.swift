@@ -17,10 +17,16 @@ struct EditorPaneView: View {
             if let document = project.document(pane.documentID) {
                 VStack(spacing: 0) {
                     VStack(spacing: 14) {
-                        TextField(document.kind == .chapter ? "未命名章节" : "未命名笔记", text: bindings.field(\.title, documentID: document.id))
+                        TextField("未命名\(document.kind.title)", text: bindings.field(\.title, documentID: document.id))
                             .font(.system(size: geometry.size.height < 360 ? 22 : 27, weight: .semibold, design: .serif))
                             .textFieldStyle(.plain).accessibilityIdentifier("editor.title")
                             .simultaneousGesture(TapGesture().onEnded { session.activate(pane.id) })
+                        if document.kind.isReference {
+                            ReferenceSummaryBar(document: document, project: project, bindings: bindings, palette: palette,
+                                prepareInput: { session.prepareAuxiliaryInput(in: pane.id) }) { id in
+                                if let linked = project.document(id) { session.open(id, kind: linked.kind, in: pane.id) }
+                            }
+                        }
                         palette.rule.frame(height: 1)
                     }.frame(maxWidth: 680).padding(.horizontal, 24).padding(.top, geometry.size.height < 360 ? 12 : 30).padding(.bottom, 8)
                     MacTextEditor(text: bindings.field(\.body, documentID: document.id), fontSize: fontSize, serif: serif, palette: palette,

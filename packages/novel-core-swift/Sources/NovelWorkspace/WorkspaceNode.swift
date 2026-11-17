@@ -13,7 +13,7 @@ public enum SplitDirection: String, CaseIterable, Codable, Sendable {
 public enum WorkspaceContent: String, Codable, CaseIterable, Sendable {
     case manuscript, editor, inspector
     public var title: String {
-        switch self { case .manuscript: "书稿"; case .editor: "正文"; case .inspector: "章节信息" }
+        switch self { case .manuscript: "资料"; case .editor: "编辑器"; case .inspector: "文档信息" }
     }
     public var symbol: String {
         switch self { case .manuscript: "list.bullet.rectangle"; case .editor: "doc.text"; case .inspector: "info.circle" }

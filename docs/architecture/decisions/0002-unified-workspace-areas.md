@@ -1,6 +1,6 @@
 # ADR 0002 — Unified workspace areas
 
-Date: 2026-11-17. Status: implemented in v0.0.1 Build 6.
+Date: 2026-11-17. Status: historical; implemented in Build 6, superseded by [ADR 0003](0003-fixed-library-paired-editors.md).
 
 ## Context
 

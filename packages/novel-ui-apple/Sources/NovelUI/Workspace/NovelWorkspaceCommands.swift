@@ -1,10 +1,10 @@
 #if os(macOS)
 import SwiftUI
 import NovelWorkspace
+import NovelDomain
 
 struct NovelWorkspaceActions {
-    var newChapter: () -> Void
-    var newNote: () -> Void
+    var newDocument: (WritingKind) -> Void
     var split: (SplitDirection) -> Void
     var canSplit: (SplitDirection) -> Bool
     var undoLayout: () -> Void
@@ -23,8 +23,11 @@ public struct NovelWorkspaceCommands: Commands {
     public init() {}
     public var body: some Commands {
         CommandGroup(after: .newItem) {
-            Button("新建章节") { actions?.newChapter() }.keyboardShortcut("n", modifiers: [.command, .shift]).disabled(actions == nil)
-            Button("新建笔记") { actions?.newNote() }.keyboardShortcut("n", modifiers: [.command, .option]).disabled(actions == nil)
+            Button("新建章节") { actions?.newDocument(.chapter) }.keyboardShortcut("n", modifiers: [.command, .shift]).disabled(actions == nil)
+            Button("新建笔记") { actions?.newDocument(.note) }.keyboardShortcut("n", modifiers: [.command, .option]).disabled(actions == nil)
+            ForEach(WritingKind.allCases.filter(\.isReference), id: \.self) { kind in
+                Button("新建\(kind.title)") { actions?.newDocument(kind) }.disabled(actions == nil)
+            }
         }
         CommandMenu("分栏") {
             ForEach(SplitDirection.allCases, id: \.self) { direction in
