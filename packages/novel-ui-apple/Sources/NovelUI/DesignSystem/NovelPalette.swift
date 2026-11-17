@@ -8,18 +8,18 @@ public enum NovelAppearance: String, CaseIterable, Identifiable {
     public var colorScheme: ColorScheme? { switch self { case .system: nil; case .light: .light; case .dark: .dark } }
 }
 
-struct NovelPalette {
+public struct NovelPalette {
     let dark: Bool
-    init(_ scheme: ColorScheme) { dark = scheme == .dark }
-    var paper: Color { Color(hex: dark ? 0x081a22 : 0xffffff) }
-    var sidebar: Color { Color(hex: dark ? 0x06131d : 0xf0f4fc) }
-    var chrome: Color { Color(hex: dark ? 0x081521 : 0xf8faff) }
-    var text: Color { Color(hex: dark ? 0xf2f7ef : 0x07141d) }
-    var secondary: Color { Color(hex: dark ? 0xb0c2d6 : 0x465b73) }
-    var rule: Color { Color(hex: dark ? 0x1c3443 : 0xd8e1ef) }
-    var accent: Color { Color(hex: dark ? 0x71ffdb : 0x0032d9) }
-    var brand: Color { dark ? text : accent }
-    var selection: Color { Color(hex: dark ? 0x143791 : 0x0032d9) }
+    public init(_ scheme: ColorScheme) { dark = scheme == .dark }
+    public var paper: Color { Color(hex: dark ? 0x081a22 : 0xffffff) }
+    public var sidebar: Color { Color(hex: dark ? 0x06131d : 0xf0f4fc) }
+    public var chrome: Color { Color(hex: dark ? 0x081521 : 0xf8faff) }
+    public var text: Color { Color(hex: dark ? 0xf2f7ef : 0x07141d) }
+    public var secondary: Color { Color(hex: dark ? 0xb0c2d6 : 0x465b73) }
+    public var rule: Color { Color(hex: dark ? 0x1c3443 : 0xd8e1ef) }
+    public var accent: Color { Color(hex: dark ? 0x71ffdb : 0x0032d9) }
+    public var brand: Color { dark ? text : accent }
+    public var selection: Color { Color(hex: dark ? 0x143791 : 0x0032d9) }
 }
 
 extension Color {

@@ -9,7 +9,7 @@
 ![macOS](https://img.shields.io/badge/macOS-13%2B-black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Novel Engine brings chapters, notes and manuscript editing into a configurable native macOS workspace. Place a reference editor beside or above your draft, and save your work as readable local files.
+Novel Engine organizes novels in a local bookshelf. Add a cover and project details, write with paired editors, and save automatically to the system Documents folder.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/workspace-dark.png">
@@ -18,11 +18,14 @@ Novel Engine brings chapters, notes and manuscript editing into a configurable n
 
 ## Features
 
+- **Bookshelf and project home.** Original covers, author and contributor credits, genre, tags, writing status and an unrestricted synopsis.
+- **Automatic local saving.** Project IDs keep storage stable when titles change. Verified snapshots, revision checks and save-status feedback protect local editing.
+
 - **Reference library.** Switch between manuscripts, characters, events, worldbuilding and settings. Keep main cards and subdocuments, track canon status, and link related documents by stable ID.
 - **Manuscripts and notes.** Create chapters and notes, edit synopses, search titles, reorder documents, and see character and paragraph counts.
 - **Paired editors.** Keep the library fixed and place an auxiliary editor left, right, above or below the main editor. Select each editor's document independently, resize the divider and undo layout changes separately from text edits.
 - **Native text editing.** SwiftUI with an AppKit text editor, input-method composition, selection, copy and paste, and text undo and redo.
-- **Readable local documents.** A `.novelengine` package contains JSON metadata and separate UTF-8 text files. Formats 1 and 2 preserve document IDs and original text; reference-library documents use Format 2.
+- **Portable projects.** Import and export `.ne` packages with JSON, UTF-8 documents and original cover files. Read Formats 1–3 and continue importing legacy `.novelengine` projects.
 - **Two appearances.** Diamond Fountain Works light and dark themes, typography controls, and a focus view that preserves the workspace layout.
 
 ## Getting started
@@ -35,7 +38,7 @@ cd NovelEngine
 make run
 ```
 
-The command builds and opens `build/Novel Engine.app`. To work in Xcode, open [`apps/apple/macOS/Package.swift`](apps/apple/macOS/Package.swift) and choose the `NovelEngine` product.
+The command builds and opens `build/Novel Engine.app`. Projects are saved automatically under the system Documents folder in `Novel Engine/作品/`; `.ne` export is optional. To work in Xcode, open [`apps/apple/macOS/Package.swift`](apps/apple/macOS/Package.swift) and choose the `NovelEngine` product.
 
 The native interface currently uses Simplified Chinese. v0.0.1 is a macOS source release; additional platform clients and cross-device synchronization are tracked in the [roadmap](docs/roadmap/PHASES.md).
 
@@ -49,7 +52,9 @@ The native interface currently uses Simplified Chinese. v0.0.1 is a macOS source
 | Document information / synopsis | Information button in the window toolbar |
 | Undo a layout change / restore default layout | Layout menu in the window toolbar |
 | New chapter / note | ⇧⌘N / ⌥⌘N |
-| Save / settings | ⌘S / ⌘, |
+| New novel / import | ⌘N / ⌘O |
+| Save now / export ne | ⌘S / ⇧⌘S |
+| Close window / settings | ⌘W / ⌘, |
 
 Moving or closing the auxiliary editor changes the view, not the manuscript files. Direction buttons reposition the same editor.
 

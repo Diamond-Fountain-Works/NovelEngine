@@ -29,3 +29,6 @@
 !.codex/environments/
 .codex/environments/*
 !.codex/environments/environment.toml
+
+*.ne
+*.ne/

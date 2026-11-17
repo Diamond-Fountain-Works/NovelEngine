@@ -46,12 +46,14 @@ public struct NovelProject: Identifiable, Equatable, Sendable {
     public let id: UUID
     public var title: String
     public var documents: [WritingDocument]
+    public var details: ProjectDetails
     public let createdAt: Date
     public var updatedAt: Date
 
-    public init(id: UUID = UUID(), title: String = "未命名小说", documents: [WritingDocument]? = nil, createdAt: Date = Date(), updatedAt: Date? = nil) {
+    public init(id: UUID = UUID(), title: String = "未命名小说", documents: [WritingDocument]? = nil, details: ProjectDetails = ProjectDetails(), createdAt: Date = Date(), updatedAt: Date? = nil) {
         self.id = id; self.title = title; self.createdAt = createdAt; self.updatedAt = updatedAt ?? createdAt
         self.documents = documents ?? [WritingDocument(kind: .chapter, title: "第一章", createdAt: createdAt)]
+        self.details = details
     }
     public func document(_ id: UUID) -> WritingDocument? { documents.first { $0.id == id } }
     public var statistics: TextStatistics { TextStatistics(characters: documents.reduce(0) { $0 + $1.statistics.characters }, paragraphs: documents.reduce(0) { $0 + $1.statistics.paragraphs }) }
@@ -60,7 +62,7 @@ public struct NovelProject: Identifiable, Equatable, Sendable {
         return TextStatistics(characters: chapters.reduce(0) { $0 + $1.statistics.characters }, paragraphs: chapters.reduce(0) { $0 + $1.statistics.paragraphs })
     }
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.id == rhs.id && lhs.title.utf8.elementsEqual(rhs.title.utf8) && lhs.documents == rhs.documents
+        lhs.id == rhs.id && lhs.title.utf8.elementsEqual(rhs.title.utf8) && lhs.documents == rhs.documents && lhs.details == rhs.details
             && lhs.createdAt == rhs.createdAt && lhs.updatedAt == rhs.updatedAt
     }
 }

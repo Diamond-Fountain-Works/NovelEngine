@@ -2,6 +2,11 @@
 
 ## Unreleased — 0.0.1 development
 
+- Add a managed bookshelf and project home with author credits, genre, status, original cover and unrestricted synopsis.
+- Automatically save to the system Documents folder with serialized snapshots, conflict checks and truthful save states.
+- Add `.ne` import/export, retain legacy `.novelengine` import, and introduce Format 3 project metadata.
+- Isolate native QA with a separate bundle ID and a required test-library root.
+
 - Add manuscript, character, event, worldbuilding and setting sections in the vertical library rail.
 - Add typed reference cards, subdocuments, canon status, tags and document links.
 - Store event participants, prerequisites and story-time anchors separately from display codes.

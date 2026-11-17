@@ -8,6 +8,8 @@ extension UTType {
     static let novelEngineProject = UTType(exportedAs: "com.diamondfountain.novelengine.project", conformingTo: .package)
 }
 
+// Legacy FileWrapper adapter retained for historical format acceptance tests.
+// The managed library and media use ManagedProjectRepository.
 struct NovelFileDocument: FileDocument {
     static var readableContentTypes: [UTType] { [.novelEngineProject] }
     var project: NovelProject
@@ -24,9 +26,11 @@ struct NovelFileDocument: FileDocument {
             files["documents/\(name)"] = data
         }
         project = try ProjectPackageCodec().decode(files)
+        guard project.details.cover == nil else { throw ProjectFormatError.invalidManifest }
     }
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper { try packageWrapper() }
     func packageWrapper() throws -> FileWrapper {
+        guard project.details.cover == nil else { throw ProjectFormatError.invalidManifest }
         let files = try ProjectPackageCodec().encode(project)
         var texts: [String: FileWrapper] = [:]
         for document in project.documents {

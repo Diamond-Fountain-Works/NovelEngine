@@ -1,12 +1,14 @@
 import Foundation
 
 public enum ProjectValidationError: Error, Equatable {
-    case emptyProject, duplicateID, invalidParent, parentCycle, invalidReference, invalidEventDependency, eventCycle
+    case emptyProject, duplicateID, invalidParent, parentCycle, invalidReference, invalidEventDependency, eventCycle, invalidDetails
 }
 
 public extension NovelProject {
     /// Shared by editing and storage, so invalid relationships cannot enter a saved package.
     func validate() throws {
+        guard Set(details.contributors.map(\.id)).count == details.contributors.count,
+              details.cover?.isValid != false else { throw ProjectValidationError.invalidDetails }
         guard !documents.isEmpty else { throw ProjectValidationError.emptyProject }
         guard Set(documents.map(\.id)).count == documents.count else { throw ProjectValidationError.duplicateID }
         let lookup = Dictionary(uniqueKeysWithValues: documents.map { ($0.id, $0) })

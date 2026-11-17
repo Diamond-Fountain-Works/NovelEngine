@@ -17,3 +17,5 @@ macOS 首个可编辑版本使用 SwiftUI DocumentGroup + FileDocument + NSTextV
 - 系统自动保存和崩溃恢复需要单独验证，不能由 codec 单元测试推断通过。
 - 暂不提供不可恢复删除。未来修订、恢复及同步在独立 ADR 中确定。
 - 先前 SQLite 是建议，没有实际数据库需要迁移。未来存储实现可以改变，但必须兼容格式 1 的作者内容。
+
+Current entry and managed-saving ownership are documented in [the architecture](../ARCHITECTURE.md); this ADR retains the initial document-app decision.
